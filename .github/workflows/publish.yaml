@@ -27,14 +27,15 @@ jobs:
       
     - name: Run tests
       run: uv run pytest tests/ -v
-
+  
+  # Using Trusted Publishers method
   build-and-publish:
     name: Build and Publish to PyPI
     runs-on: ubuntu-latest
     needs: test
+    environment: pypi
     permissions:
-      id-token: write  # For trusted publishing
-      contents: read
+      id-token: write
     
     steps:
     - name: Checkout code
@@ -60,7 +61,5 @@ jobs:
         echo "Built packages:"
         ls dist/*.whl dist/*.tar.gz
         
-    - name: Publish to PyPI
+    - name: Publish package distributions to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        password: ${{ secrets.PYPI_API_TOKEN }}
