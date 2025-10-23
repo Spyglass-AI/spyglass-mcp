@@ -1,10 +1,13 @@
-# Spyglass MCP Server
+# Spyglass AI MCP Server
 
-An MCP server for interacting with the Spyglass AI agent to analyze OpenTelemetry data.
+The Spyglass AI MCP server provides a simple interface for LLMs to query the Spyglass AI agent. The agent analyzes your telemetry data and provides intelligent insights about application performance, errors, and bottlenecks.
+
+To install the MCP server for Cursor click the button below. It should open Cursor and prompt you to add your API Key.
+
 
 [![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](cursor://anysphere.cursor-deeplink/mcp/install?name=spyglass-AI&config=eyJlbnYiOnsiU1BZR0xBU1NfQVBJX0tFWSI6InlvdXIta2V5LWhlcmUifSwiY29tbWFuZCI6InV2IHJ1biBzcHlnbGFzcy1tY3AifQ%3D%3D)
-
-#### ~/.cursor/mcp.json
+ 
+Alternatively, add the following to your `~/.cursor/mcp.json` file (create it if you need to) and substitute your Spyglass API Key. Then restart Cursor to apply the change.
 ```json
 {
   "mcpServers": {
@@ -19,83 +22,7 @@ An MCP server for interacting with the Spyglass AI agent to analyze OpenTelemetr
 }
 ```
 
-For local testing, add the `SPYGLASS_AGENT_ENDPOINT` environment variable:
-```json
-{
-  "mcpServers": {
-    "spyglass-ai": {
-      "command": "uv",
-      "args": ["run", "spyglass-mcp"],
-      "env": {
-        "SPYGLASS_API_KEY": "your-key-here",
-        "SPYGLASS_AGENT_ENDPOINT": "http://localhost:8080"
-      }
-    }
-  }
-}
-```
-
-## Overview
-
-This MCP server provides a simple interface for LLMs to query the Spyglass AI agent. The agent analyzes your telemetry data and provides intelligent insights about application performance, errors, and bottlenecks.
-
-## Installation
-
-```bash
-cd spyglass-mcp
-uv sync
-```
-
-## Usage
-
-The server requires a valid API Key for authentication via the `SPYGLASS_API_KEY` environment variable. You can get one by logging in to spyglass-ai.com and going to the Account tab.
-
-### Set Your API Key
-
-**Option 1: Environment variable**
-```bash
-export SPYGLASS_API_KEY='your-jwt-token'
-```
-
-**Option 2: .env file**
-Create a `.env` file in the `spyglass-mcp` directory:
-```bash
-SPYGLASS_API_KEY=your-jwt-token
-```
-
-### Basic Usage (stdio transport)
-
-```bash
-uv run spyglass-mcp
-```
-
-### HTTP Transport
-
-```bash
-uv run spyglass-mcp --transport http --port 8000
-```
-
-### Custom Endpoint
-
-For local testing, you can configure a custom endpoint using either an environment variable or command line argument:
-
-**Option 1: Environment variable**
-```bash
-export SPYGLASS_AGENT_ENDPOINT=http://localhost:8080
-uv run spyglass-mcp
-```
-
-**Option 2: .env file**
-```bash
-SPYGLASS_AGENT_ENDPOINT=http://localhost:8080
-```
-
-**Option 3: Command line argument**
-```bash
-uv run spyglass-mcp --endpoint http://localhost:8080
-```
-
-Note: Command line arguments take precedence over environment variables.
+Note that you need to have `uv` installed first, see the docs for that [here](https://docs.astral.sh/uv/getting-started/installation/)
 
 ## Available Tools
 
@@ -104,13 +31,14 @@ Note: Command line arguments take precedence over environment variables.
 Calls the Spyglass AI agent with a natural language query about your telemetry data.
 
 **Parameters:**
-- `query` (string, required): Natural language query about telemetry data
+- `query` (string, required): Natural language query about your application's telemetry data
 
 **Example queries:**
 - "What are the slowest endpoints in the last hour?"
 - "Show me all errors in the checkout service"
 - "Which services have the highest error rate?"
 - "What's causing high latency in my API?"
+- "How many requests has my app had in the last day?"
 
 **Returns:**
 - Natural language analysis of the telemetry data
@@ -165,15 +93,6 @@ The MCP server logs to both stderr (captured by Cursor) and a file for debugging
 tail -f ~/.spyglass/logs/mcp-server-$(date +%Y%m%d).log
 ```
 
-**Check Cursor's MCP logs:**
-```bash
-# macOS
-tail -f ~/Library/Logs/Cursor/mcp*.log
-
-# Or browse all logs
-ls -la ~/Library/Logs/Cursor/
-```
-
 The logs include:
 - Server startup and configuration
 - Incoming queries and responses
@@ -181,6 +100,79 @@ The logs include:
 - Error messages and stack traces
 
 ## Development
+
+### Prerequisites
+
+- Python 3.11 or higher
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) package manager
+
+### Setup
+
+1. Clone the repository and navigate to the project directory:
+```bash
+cd spyglass-mcp
+```
+
+2. Install dependencies:
+```bash
+uv sync
+```
+
+This will create a virtual environment and install all required dependencies.
+
+3. Copy the example environment file and configure your API key:
+```bash
+cp env.example .env
+# Edit .env and add your SPYGLASS_API_KEY
+```
+
+### Running Locally
+
+Run the MCP server in stdio mode (default):
+```bash
+uv run spyglass-mcp
+```
+
+Run with a custom endpoint (useful for testing against a local agent):
+```bash
+uv run spyglass-mcp --endpoint http://localhost:8080
+```
+
+Run in HTTP transport mode:
+```bash
+uv run spyglass-mcp --transport http --port 8000
+```
+
+### Running Tests
+
+Run all tests:
+```bash
+uv run pytest
+```
+
+Run tests with verbose output:
+```bash
+uv run pytest -v
+```
+
+Run a specific test file:
+```bash
+uv run pytest tests/test_mcp_server.py
+```
+
+Run tests with coverage:
+```bash
+uv run pytest --cov=spyglass_mcp --cov-report=term-missing
+```
+
+### Building
+
+Build the package for distribution:
+```bash
+uv build
+```
+
+This will create wheel and source distribution files in the `dist/` directory.
 
 ### Project Structure
 
@@ -193,6 +185,10 @@ spyglass-mcp/
 │   └── spyglass_mcp/
 │       ├── __init__.py
 │       └── main.py
+├── tests/
+│   ├── __init__.py
+│   ├── conftest.py
+│   └── test_mcp_server.py
 ├── CHANGELOG.md
 ├── env.example
 ├── LICENSE
