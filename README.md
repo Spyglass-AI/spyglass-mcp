@@ -5,15 +5,15 @@ The Spyglass AI MCP server provides a simple interface for LLMs to query the Spy
 To install the MCP server for Cursor click the button below. It should open Cursor and prompt you to add your API Key.
 
 
-[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](cursor://anysphere.cursor-deeplink/mcp/install?name=spyglass-AI&config=eyJlbnYiOnsiU1BZR0xBU1NfQVBJX0tFWSI6InlvdXIta2V5LWhlcmUifSwiY29tbWFuZCI6InV2IHJ1biBzcHlnbGFzcy1tY3AifQ%3D%3D)
+[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](cursor://anysphere.cursor-deeplink/mcp/install?name=Spyglass-AI&config=eyJlbnYiOnsiU1BZR0xBU1NfQVBJX0tFWSI6InlvdXIta2V5LWhlcmUifSwiY29tbWFuZCI6InV2eCBzcHlnbGFzcy1tY3AifQ%3D%3D)
  
 Alternatively, add the following to your `~/.cursor/mcp.json` file (create it if you need to) and substitute your Spyglass API Key. Then restart Cursor to apply the change.
 ```json
 {
   "mcpServers": {
     "spyglass-ai": {
-      "command": "uv",
-      "args": ["run", "spyglass-mcp"],
+      "command": "uvx",
+      "args": ["spyglass-mcp"],
       "env": {
         "SPYGLASS_API_KEY": "your-key-here"
       }
